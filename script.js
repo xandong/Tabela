@@ -3,17 +3,42 @@ const btnAddPlayer = document.querySelector('#add-player');
 const btnRemovePlayer = document.querySelector('#remove-player')
 const btnResetPlayers = document.querySelector('#reset-players')
 
-const btnAdd = document.querySelectorAll('.btn-add')
-const btnAddWin = document.getElementsByClassName('btn-add-win')
-const btnAddPie = document.getElementsByClassName('btn-add-pie')
-const btnAddLose = document.getElementsByClassName('btn-add-lose')
-
-
-
 let players = [], 
     playersFormated = [],
-    indexId = -1;
+    indexId = -1,
+    valueWin = 3,
+    valueTie = 1;
 
+function headerTable () {
+    return `<tr>
+    <th>Name</th>
+    <th>Wins</th>
+    <th></th>
+    <th>Tie</th>
+    <th></th>
+    <th>Points</th>
+    </tr>`
+}
+tabela.innerHTML = headerTable()
+
+function lineBodytable (player) {
+    return `<tr>
+                <td>${player.name}</td>
+                <td>${player.win}</td>
+                <td class="text-start"><button onClick="addWin(players[${player.id}])" id="btn-add-win${player.id}" class="btn-add">+</button></td>
+                <td>${player.tie}</td>
+                <td class="text-start"><button onClick="addTie(players[${player.id}])" id="btn-add-tie${player.id}" class="btn-add">+</button></td>
+                <td>${player.points}</td>
+            </tr>`
+}
+
+function alterTable () {
+    tabela.innerHTML = headerTable();
+    players.forEach(player => {
+        return playersFormated[player.id] = lineBodytable(player)
+    })
+    tabela.innerHTML += playersFormated;
+}
 
 function createPlayer(name) { // CLASSE DE UM JOGADOR
     indexId++;
@@ -38,48 +63,30 @@ function checkPlayer(name) {
     return name;
 }
 
-function calculaPontos (player) {
-    player.points = (player.win*3)+player.tie;
-}
-
 function addPlayer() {  // COMO ADICIONAR UM NOVO JOGADOR
     newNamePlayer = prompt("Nome do novo PLAYER:"); // RECEBE NOME DO NOVO JOGADOR    
     newNamePlayer = checkPlayer(newNamePlayer); // CHECA SE PLAYER JA ESTÁ INSERIDO
-    // let invalidInput = [null, '', '\32'*Number]
-    // console.log(invalidInput)
+    if (newNamePlayer == null || newNamePlayer.length == 0 || newNamePlayer.match(/^(\s)+$/) ) return // VALIDAÇÃO DE STRING INVALIDA OU AÇÂO CANCELADA
     let newPlayer = (createPlayer(newNamePlayer));
-    console.log(newPlayer)
-    if (newNamePlayer == null || newNamePlayer.length === 0|| newNamePlayer.match(/^(\s)+$/) ) return
-    let newPlayerFormated = `<tr>\n
-                    <td>${newPlayer.name}</td>\n
-                    <td>${newPlayer.win}</td>\n
-                    <td class="text-start"><button onClick="addWin(players[${newPlayer.id}])" id="btn-add-win${newPlayer.id}" class="btn-add btn-add-win">+</button></td>\n
-                    <td>${newPlayer.tie}</td>\n
-                    <td class="text-start"><button onClick="addTie(players[${newPlayer.id}])" id="btn-add-tie${newPlayer.id}" class="btn-add btn-add-tie">+</button></td>\n
-                    <td>${newPlayer.lose}</td>\n
-                    <td class="text-start"><button onClick="addLose(players[${newPlayer.id}])" id="btn-add-lose${newPlayer.id}" class="btn-add btn-add-lose">+</button></td>\n
-                    <td>${newPlayer.points}</td>\n
-                    </tr>`
-    tabela.innerHTML += newPlayerFormated;
-    playersFormated.push(newPlayerFormated)
+    let newPlayerFormated = lineBodytable(newPlayer)
     players.push(newPlayer)
+    playersFormated.push(newPlayerFormated)
+    tabela.innerHTML += newPlayerFormated;
 }
 
-
-
 function removePlayer() {
-    let newPlayers = [];
-    alert('Atenção! Insira o nome corretamente.')
-    let nameRemove = prompt("Remover o PLAYER: ");
-
+    let newPlayers = [], newPlayerFormated = [], nameRemove = prompt(`Atenção, insira o nome corretamente! Remover o PLAYER: `, ['Nome do Player']);
+    // if (nameRemove == null || nameRemove.length == 0 || nameRemove.match(/^(\s)+$/) ) return // VALIDAÇÃO DE STRING INVALIDA OU AÇÂO CANCELADA
     players.forEach(player => {
         if(player.name != nameRemove) {
-        newPlayers.push(player)
+            newPlayers.push(player)
+            newPlayerFormated.push(playersFormated[player.id])
         }
     });
-    players = newPlayers;
-    newPlayers = [];
-    console.log(players)
+
+    players = newPlayers, playersFormated = newPlayerFormated;
+    newPlayers = [], newPlayerFormated = [];
+    alterTable();
 }
 
 function resetPlayers() {
@@ -88,31 +95,25 @@ function resetPlayers() {
         player.tie = 0;
         player.lose = 0;
         player.points = 0;
-    })    
+    })
+    alterTable();     
 }
 
-function add() {
-    //calculaPontos(player);
-    console.log("Botão Adicionado")
+function calculaPontos (player) {
+    player.points = (player.win*valueWin)+player.tie*valueTie;
+    alterTable();
 }
 
 function addWin(player) {
-    //calculaPontos(player);
     player.win++;
-    calculaPontos(player)
-    console.log("Vitoria Adicionada")
+    calculaPontos(player);   
 }
+
 function addTie(player) {
-    //calculaPontos(player);
-    console.log("Empate Adicionado")
     player.tie++;
-    calculaPontos(player)
-}
-function addLose(player) {
-    player.lose++;
-    console.log("Derrota Adicionada")
+    calculaPontos (player);
 }
 
 btnAddPlayer.addEventListener('click', addPlayer, false); // ADICIONANDO NOVO JOGADOR
 btnRemovePlayer.addEventListener('click', removePlayer, false); // REMOVE PLAYER DA LISTA
-btnRemovePlayer.addEventListener('click', resetPlayers, false); // RESETA TODOS OS VALORES DO PLAYERS
+btnResetPlayers.addEventListener('click', resetPlayers, false); // RESETA TODOS OS VALORES DO PLAYERS
