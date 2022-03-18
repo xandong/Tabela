@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabela</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header class="flex">
+        <h1>Tabela de Classificação</h1>
+    </header>
+    <main class="flex column">
+        <section id="info">
+            <p>Adicione nome <strong>único</strong> para cada player!</p>
+            <p><strong>Win</strong> = 3 points ... <strong>Tie</strong> = 1 point ... <strong>Defeat</strong> = 0 points</p>
+        </section>
+        <table id="tabela">
+            <tr>
+                <th>Name</th>
+                <th>Wins</th>
+                <th></th>
+                <th>Tie</th>
+                <th></th>
+                <th>Defeat</th>
+                <th></th>
+                <th>Points</th>
+            </tr>
+        </table>
+        <section id="btns">
+            <button id="add-player" class="btn">Add Player</button>
+            <button id="remove-player" class="btn">Remove Player</button>
+            <button id="reset-players" class="btn">Reset Players</button>
+        </section>
+    </main>
+    <footer class="flex">
+        <p>Desenvolvido por Alexandre Gurgel.</p>
+    </footer>
+</body>
+</html>
