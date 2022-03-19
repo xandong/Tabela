@@ -1,45 +1,41 @@
-const tabela = document.querySelector('#tabela')
+const table = document.querySelector('#tabela')
 const btnAddPlayer = document.querySelector('#add-player');
 const btnRemovePlayer = document.querySelector('#remove-player')
 const btnResetPlayers = document.querySelector('#reset-players')
 
-let players = [], 
-    playersFormated = [],
-    indexId = -1,
-    valueWin = 3,
-    valueTie = 1;
+let [players, playersFormated] = [[],[]],
+    [indexId, valueWin, valueTie] = [-1, 3, 1];
 
-function headerTable () {
-    return `<tr>
-    <th>Name</th>
-    <th>Wins</th>
-    <th></th>
-    <th>Tie</th>
-    <th></th>
-    <th>Points</th>
-    </tr>`
+function headerTable () { // CABEÇALHO DA TABELA
+    return (
+`<tr>
+<th>Name</th>
+<th>Wins</th>
+<th></th>
+<th>Tie</th>
+<th></th>
+<th>Points</th>
+</tr>`)
 }
-tabela.innerHTML = headerTable()
+table.innerHTML = headerTable()
 
-function lineBodytable (player) {
-    return `<tr>
-                <td>${player.name}</td>
-                <td>${player.win}</td>
-                <td class="text-start"><button onClick="addWin(players[${player.id}])" id="btn-add-win${player.id}" class="btn-add">+</button></td>
-                <td>${player.tie}</td>
-                <td class="text-start"><button onClick="addTie(players[${player.id}])" id="btn-add-tie${player.id}" class="btn-add">+</button></td>
-                <td>${player.points}</td>
-            </tr>`
+function lineTable (player) { // CRIA LINHA DA TABELA EM HTML
+    return (
+`<tr>
+<td>${player.name}</td>
+<td>${player.win}</td>
+<td class="text-start"><button onClick="addWin(players[${player.id}])" class="btn-add">+</button></td>
+<td>${player.tie}</td>
+<td class="text-start"><button onClick="addTie(players[${player.id}])" class="btn-add">+</button></td>
+<td>${player.points}</td>
+</tr>`)
 }
-
-function alterTable () {
-    tabela.innerHTML = headerTable();
+function alterTable () { // ALTERA TODA A TABELA
+    table.innerHTML = headerTable();
     players.forEach(player => {
-        return playersFormated[player.id] = lineBodytable(player)
+        table.innerHTML += (playersFormated[player.id] = lineTable(player));
     })
-    tabela.innerHTML += playersFormated;
 }
-
 function createPlayer(name) { // CLASSE DE UM JOGADOR
     indexId++;
     return {
@@ -51,67 +47,61 @@ function createPlayer(name) { // CLASSE DE UM JOGADOR
         points: Number = 0,
     };
 }
-
-function checkPlayer(name) {
+function checkName(name) { // CHECA SE NOME É INVALIDO OU REPETIDO
     players.forEach(player => {
-        if (player.name == name) {
-            alert('PLAYER JÁ INSERIDO !!!');
-            name = prompt('Insira o nome corretamente:')
-            checkPlayer(name)
+        if(name == player.name) {
+            checkName(name = prompt('Inválido. Insira um nome diferente:'));
         }
     });
     return name;
 }
-
-function addPlayer() {  // COMO ADICIONAR UM NOVO JOGADOR
-    newNamePlayer = prompt("Nome do novo PLAYER:"); // RECEBE NOME DO NOVO JOGADOR    
-    newNamePlayer = checkPlayer(newNamePlayer); // CHECA SE PLAYER JA ESTÁ INSERIDO
-    if (newNamePlayer == null || newNamePlayer.length == 0 || newNamePlayer.match(/^(\s)+$/) ) return // VALIDAÇÃO DE STRING INVALIDA OU AÇÂO CANCELADA
+function addPlayer() {  // ADICIONA UM NOVO JOGADOR
+    let newNamePlayer = checkName(prompt("Nome do novo PLAYER:")); // RECEBE E FUNCAO PARA CHECAR NAME
+    if (newNamePlayer == null|| newNamePlayer.length == 0 || newNamePlayer.match(/^(\s)+$/) ) return
     let newPlayer = (createPlayer(newNamePlayer));
-    let newPlayerFormated = lineBodytable(newPlayer)
-    players.push(newPlayer)
-    playersFormated.push(newPlayerFormated)
-    tabela.innerHTML += newPlayerFormated;
+    players.push(newPlayer);
+    playersFormated.push(lineTable(newPlayer));
+    table.innerHTML += lineTable(newPlayer);
 }
-
-function removePlayer() {
-    let newPlayers = [], newPlayerFormated = [], nameRemove = prompt(`Atenção, insira o nome corretamente! Remover o PLAYER: `, ['Nome do Player']);
-    // if (nameRemove == null || nameRemove.length == 0 || nameRemove.match(/^(\s)+$/) ) return // VALIDAÇÃO DE STRING INVALIDA OU AÇÂO CANCELADA
+function removePlayer() { // REMOVE UM JOGADOR PELO NOME
+    let auxIndex = 0,
+        newPlayers = [],
+        newPlayerFormated = [],
+        nameRemove = prompt("Atenção! Insira o nome do jogador corretamente:");
     players.forEach(player => {
         if(player.name != nameRemove) {
             newPlayers.push(player)
             newPlayerFormated.push(playersFormated[player.id])
+            auxIndex++;
+            if( auxIndex == players.length) alert("Nome inválido.")
+        } else {
+            for (let i = player.id; i < players.length-1; i++) {
+                players[i+1].id = i;
+            }
+            alert(`Jogador ${nameRemove} removido!`)
         }
     });
-
-    players = newPlayers, playersFormated = newPlayerFormated;
-    newPlayers = [], newPlayerFormated = [];
+    [players, playersFormated] = [newPlayers, newPlayerFormated];
+    [newPlayers, newPlayerFormated] = [[], []];
     alterTable();
 }
-
-function resetPlayers() {
+function resetPlayers() { // RESETA A W/T/P DE TODOS OS JOGADORES
     players.forEach(player => {
-        player.win = 0;
-        player.tie = 0;
-        player.lose = 0;
-        player.points = 0;
+        [player.win, player.tie, player.points] = [0, 0, 0];
     })
     alterTable();     
 }
-
-function calculaPontos (player) {
+function calculaPoints (player) { // CALCULA POTNOS
     player.points = (player.win*valueWin)+player.tie*valueTie;
     alterTable();
 }
-
-function addWin(player) {
+function addWin(player) { // ADICIONA VITÓRIA A JOGADOR
     player.win++;
-    calculaPontos(player);   
+    calculaPoints(player);   
 }
-
-function addTie(player) {
+function addTie(player) { // ADICIONA EMPATE A JOGADOR
     player.tie++;
-    calculaPontos (player);
+    calculaPoints(player);
 }
 
 btnAddPlayer.addEventListener('click', addPlayer, false); // ADICIONANDO NOVO JOGADOR
