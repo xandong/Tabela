@@ -1,2 +1,2 @@
-# Tabela
- Tabela de classificação com vitórias, empates e derrotas
+#Tabela
+Tabela de classificação de jogadores com base em vitórias e empates.
